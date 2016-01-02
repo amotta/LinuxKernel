@@ -2,8 +2,8 @@
 # Maintainer: Tobias Powalowski <tpowa@archlinux.org>
 # Maintainer: Thomas Baechler <thomas@archlinux.org>
 
-pkgbase=linux               # Build stock -ARCH kernel
-#pkgbase=linux-custom       # Build kernel with a different name
+#pkgbase=linux               # Build stock -ARCH kernel
+pkgbase=linux-amotta         # Build kernel with a different name
 _srcname=linux-4.3
 pkgver=4.3.3
 pkgrel=2
@@ -21,7 +21,8 @@ source=("https://www.kernel.org/pub/linux/kernel/v4.x/${_srcname}.tar.xz"
         'config' 'config.x86_64'
         # standard config files for mkinitcpio ramdisk
         'linux.preset'
-        'change-default-console-loglevel.patch')
+        'change-default-console-loglevel.patch'
+        'add-support-for-surface-touchpad.patch')
 
 sha256sums=('4a622cc84b8a3c38d39bc17195b0c064d2b46945dfde0dae18f77b120bc9f3ae'
             'SKIP'
@@ -31,7 +32,8 @@ sha256sums=('4a622cc84b8a3c38d39bc17195b0c064d2b46945dfde0dae18f77b120bc9f3ae'
             'f4084c6d43abc40819f4535f827d3d8e643d25e67fedf0bab46346ead8c08b84'
             '98caa62b4759f6ae180660cc1be4aeda7198e50fb7cf51aee4e677ae6ee2d19e'
             'f0d90e756f14533ee67afda280500511a62465b4f76adcc5effa95a40045179c'
-            '1256b241cd477b265a3c2d64bdc19ffe3c9bbcee82ea3994c590c2c76e767d99')
+            '1256b241cd477b265a3c2d64bdc19ffe3c9bbcee82ea3994c590c2c76e767d99'
+            '907cb15bdbd0c8155e3dd351ab5ed0f6da7f73c86564e091de6ca24796942c1b')
 validpgpkeys=(
               'ABAF11C65A2970B130ABE3C479BE3E4300411886' # Linus Torvalds
               '647F28654894E3BD457199BE38DBBDC86092693E' # Greg Kroah-Hartman
@@ -44,6 +46,9 @@ prepare() {
 
   # add upstream patch
   patch -p1 -i "${srcdir}/patch-${pkgver}"
+
+  # add support for surface touchpad
+  patch -p1 -i "${srcdir}/add-support-for-surface-touchpad.patch"
 
   # add latest fixes from stable queue, if needed
   # http://git.kernel.org/?p=linux/kernel/git/stable/stable-queue.git
