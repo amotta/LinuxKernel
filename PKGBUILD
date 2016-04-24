@@ -1,46 +1,36 @@
-# $Id: PKGBUILD 258434 2016-01-20 06:16:45Z tpowa $
-# Maintainer: Tobias Powalowski <tpowa@archlinux.org>
-# Maintainer: Thomas Baechler <thomas@archlinux.org>
-
-#pkgbase=linux               # Build stock -ARCH kernel
-pkgbase=linux-amotta         # Build kernel with a different name
-_srcname=linux-4.3
-pkgver=4.3.3
-pkgrel=3
+pkgbase=linux-lts-amotta
+_srcname=linux-4.4
+pkgver=4.4.8
+pkgrel=1
 arch=('i686' 'x86_64')
 url="http://www.kernel.org/"
 license=('GPL2')
 makedepends=('xmlto' 'docbook-xsl' 'kmod' 'inetutils' 'bc')
 options=('!strip')
-source=("https://www.kernel.org/pub/linux/kernel/v4.x/${_srcname}.tar.xz"
-        "https://www.kernel.org/pub/linux/kernel/v4.x/${_srcname}.tar.sign"
-        "https://www.kernel.org/pub/linux/kernel/v4.x/patch-${pkgver}.xz"
-        "https://www.kernel.org/pub/linux/kernel/v4.x/patch-${pkgver}.sign"
-        "0001-disabling-primary-plane-in-the-noatomic-case.patch"
+source=(https://www.kernel.org/pub/linux/kernel/v4.x/${_srcname}.tar.{xz,sign}
+        https://www.kernel.org/pub/linux/kernel/v4.x/patch-${pkgver}.{xz,sign}
         # the main kernel config files
         'config' 'config.x86_64'
         # standard config files for mkinitcpio ramdisk
-        'linux.preset'
-        'change-default-console-loglevel.patch'
-        'add-support-for-surface-touchpad.patch'
-        'CVE-2016-0728.patch')
-
-sha256sums=('4a622cc84b8a3c38d39bc17195b0c064d2b46945dfde0dae18f77b120bc9f3ae'
+        "${pkgbase%-*}.preset"
+        change-default-console-loglevel.patch
+        0001-sdhci-revert.patch
+        add-support-for-surface-touchpad.patch)
+# https://www.kernel.org/pub/linux/kernel/v4.x/sha256sums.asc
+sha256sums=('401d7c8fef594999a460d10c72c5a94e9c2e1022f16795ec51746b0d165418b2'
             'SKIP'
-            '95cd81fcbb87953f672150d60950548edc04a88474c42de713b91811557fefa5'
+            '11ec99ae0600bd831ff8d71b77e64592f4b6918b7857fd9ff0284ea4cf267b4e'
             'SKIP'
-            'abdd04bd6beecb7c961130a68d71e6332bd260462eeaa2f4f8e634de813dcc4d'
-            'f4084c6d43abc40819f4535f827d3d8e643d25e67fedf0bab46346ead8c08b84'
-            '98caa62b4759f6ae180660cc1be4aeda7198e50fb7cf51aee4e677ae6ee2d19e'
-            'f0d90e756f14533ee67afda280500511a62465b4f76adcc5effa95a40045179c'
+            'b11702727b1503e5a613946790978481d34d8ecc6870337fadd3ce1ef084a8e2'
+            '68c7296ff2f5f55d69e83aa4d20f925df740b1eb1e6bdb0f13e8a170360ed09f'
+            '1f036f7464da54ae510630f0edb69faa115287f86d9f17641197ffda8cfd49e0'
             '1256b241cd477b265a3c2d64bdc19ffe3c9bbcee82ea3994c590c2c76e767d99'
-            '907cb15bdbd0c8155e3dd351ab5ed0f6da7f73c86564e091de6ca24796942c1b'
-            '03bed5b1c6ef34a917e218a46d38cd1347c5ab5693131996113c6cad275dc4e9')
-validpgpkeys=(
-              'ABAF11C65A2970B130ABE3C479BE3E4300411886' # Linus Torvalds
-              '647F28654894E3BD457199BE38DBBDC86092693E' # Greg Kroah-Hartman
-             )
+            '5313df7cb5b4d005422bd4cd0dae956b2dadba8f3db904275aaf99ac53894375'
+            '3fc4f32d3daf3c727f48526529adb5f82034f300d4e77f0a95994fe3aa5f5bb5')
 
+validpgpkeys=('ABAF11C65A2970B130ABE3C479BE3E4300411886' # Linus Torvalds <torvalds@linux-foundation.org>
+              '647F28654894E3BD457199BE38DBBDC86092693E' # Greg Kroah-Hartman (Linux kernel stable release signing key) <greg@kroah.com>
+             )
 _kernelname=${pkgbase#linux}
 
 prepare() {
@@ -49,23 +39,21 @@ prepare() {
   # add upstream patch
   patch -p1 -i "${srcdir}/patch-${pkgver}"
 
-  # add support for surface touchpad
-  patch -p1 -i "${srcdir}/add-support-for-surface-touchpad.patch"
-
   # add latest fixes from stable queue, if needed
   # http://git.kernel.org/?p=linux/kernel/git/stable/stable-queue.git
   
-  # fixes #47820 CVE-2016-0728.patch
-  patch -Np1 -i "${srcdir}/CVE-2016-0728.patch"
+  # revert http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=9faac7b95ea4f9e83b7a914084cc81ef1632fd91
+  # fixes #47778 sdhci broken on some boards
+  # https://bugzilla.kernel.org/show_bug.cgi?id=106541
+  patch -Rp1 -i "${srcdir}/0001-sdhci-revert.patch"
 
   # set DEFAULT_CONSOLE_LOGLEVEL to 4 (same value as the 'quiet' kernel param)
   # remove this when a Kconfig knob is made available by upstream
   # (relevant patch sent upstream: https://lkml.org/lkml/2011/7/26/227)
   patch -p1 -i "${srcdir}/change-default-console-loglevel.patch"
 
-  # fix #46968
-  # hangs on older intel hardware
-  patch -Np1 -i "${srcdir}/0001-disabling-primary-plane-in-the-noatomic-case.patch"
+  # add support for type cover 4
+  patch -p1 -i "${srcdir}/add-support-for-surface-touchpad.patch"
 
   if [ "${CARCH}" = "x86_64" ]; then
     cat "${srcdir}/config.x86_64" > ./.config
@@ -111,7 +99,7 @@ _package() {
   depends=('coreutils' 'linux-firmware' 'kmod' 'mkinitcpio>=0.7')
   optdepends=('crda: to set the correct wireless channels of your country')
   backup=("etc/mkinitcpio.d/${pkgbase}.preset")
-  install=linux.install
+  install=linux-lts.install
 
   cd "${srcdir}/${_srcname}"
 
@@ -135,7 +123,7 @@ _package() {
     -i "${startdir}/${install}"
 
   # install mkinitcpio preset file for kernel
-  install -D -m644 "${srcdir}/linux.preset" "${pkgdir}/etc/mkinitcpio.d/${pkgbase}.preset"
+  install -D -m644 "${srcdir}/${pkgbase}.preset" "${pkgdir}/etc/mkinitcpio.d/${pkgbase}.preset"
   sed \
     -e "1s|'linux.*'|'${pkgbase}'|" \
     -e "s|ALL_kver=.*|ALL_kver=\"/boot/vmlinuz-${pkgbase}\"|" \
@@ -148,10 +136,10 @@ _package() {
   # remove the firmware
   rm -rf "${pkgdir}/lib/firmware"
   # make room for external modules
-  ln -s "../extramodules-${_basekernel}${_kernelname:--ARCH}" "${pkgdir}/lib/modules/${_kernver}/extramodules"
+  ln -s "../extramodules-${_basekernel}${_kernelname:--lts}" "${pkgdir}/lib/modules/${_kernver}/extramodules"
   # add real version for building modules and running depmod from post_install/upgrade
-  mkdir -p "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:--ARCH}"
-  echo "${_kernver}" > "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:--ARCH}/version"
+  mkdir -p "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:--lts}"
+  echo "${_kernver}" > "${pkgdir}/lib/modules/extramodules-${_basekernel}${_kernelname:--lts}/version"
 
   # Now we call depmod...
   depmod -b "${pkgdir}" -F System.map "${_kernver}"
@@ -161,7 +149,7 @@ _package() {
   mv "${pkgdir}/lib" "${pkgdir}/usr/"
 
   # add vmlinux
-  install -D -m644 vmlinux "${pkgdir}/usr/lib/modules/${_kernver}/build/vmlinux" 
+  install -D -m644 vmlinux "${pkgdir}/usr/lib/modules/${_kernver}/build/vmlinux"
 }
 
 _package-headers() {
@@ -253,8 +241,6 @@ _package-headers() {
   # add xfs and shmem for aufs building
   mkdir -p "${pkgdir}/usr/lib/modules/${_kernver}/build/fs/xfs"
   mkdir -p "${pkgdir}/usr/lib/modules/${_kernver}/build/mm"
-  # removed in 3.17 series
-  # cp fs/xfs/xfs_sb.h "${pkgdir}/usr/lib/modules/${_kernver}/build/fs/xfs/xfs_sb.h"
 
   # copy in Kconfig files
   for i in $(find . -name "Kconfig*"); do
@@ -279,6 +265,11 @@ _package-headers() {
 
   # remove unneeded architectures
   rm -rf "${pkgdir}"/usr/lib/modules/${_kernver}/build/arch/{alpha,arc,arm,arm26,arm64,avr32,blackfin,c6x,cris,frv,h8300,hexagon,ia64,m32r,m68k,m68knommu,metag,mips,microblaze,mn10300,openrisc,parisc,powerpc,ppc,s390,score,sh,sh64,sparc,sparc64,tile,unicore32,um,v850,xtensa}
+  
+  # remove files already in linux-docs package
+  rm -f "${pkgdir}/usr/lib/modules/${_kernver}/build/Documentation/kbuild/Kconfig.recursion-issue-01"
+  rm -f "${pkgdir}/usr/lib/modules/${_kernver}/build/Documentation/kbuild/Kconfig.recursion-issue-02"
+  rm -f "${pkgdir}/usr/lib/modules/${_kernver}/build/Documentation/kbuild/Kconfig.select-break"
 }
 
 _package-docs() {
@@ -302,5 +293,3 @@ for _p in ${pkgname[@]}; do
     _package${_p#${pkgbase}}
   }"
 done
-
-# vim:set ts=8 sts=2 sw=2 et:
