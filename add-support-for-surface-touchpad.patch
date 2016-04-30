@@ -10,7 +10,7 @@ diff -ur linux-4.4/drivers/hid/hid-core.c linux-4.4-mod/drivers/hid/hid-core.c
 -	     hid->product == USB_DEVICE_ID_MS_TYPE_COVER_PRO_3_JP ||
 -	     hid->product == USB_DEVICE_ID_MS_TYPE_COVER_3 ||
 -	     hid->product == USB_DEVICE_ID_MS_POWER_COVER) &&
-+	    hid->product == USB_DEVICE_ID_MS_POWER_COVER
++	    hid->product == USB_DEVICE_ID_MS_POWER_COVER &&
  	    hid->group == HID_GROUP_MULTITOUCH)
  		hid->group = HID_GROUP_GENERIC;
  
