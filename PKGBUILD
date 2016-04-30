@@ -26,7 +26,7 @@ sha256sums=('401d7c8fef594999a460d10c72c5a94e9c2e1022f16795ec51746b0d165418b2'
             '1f036f7464da54ae510630f0edb69faa115287f86d9f17641197ffda8cfd49e0'
             '1256b241cd477b265a3c2d64bdc19ffe3c9bbcee82ea3994c590c2c76e767d99'
             '5313df7cb5b4d005422bd4cd0dae956b2dadba8f3db904275aaf99ac53894375'
-            '906e2c054303d3a2ef53c9b38da43bf47af1c240513f9fb5674c8a9e46d4d90c')
+            'a9db54fd5032cdb5e57dd20fe6b1d30ee3f1d3fa8b8f939a6e8086a5159c0230')
 
 validpgpkeys=('ABAF11C65A2970B130ABE3C479BE3E4300411886' # Linus Torvalds <torvalds@linux-foundation.org>
               '647F28654894E3BD457199BE38DBBDC86092693E' # Greg Kroah-Hartman (Linux kernel stable release signing key) <greg@kroah.com>
