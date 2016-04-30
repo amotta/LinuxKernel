@@ -1,4 +1,4 @@
-pkgbase=linux-lts-amotta
+pkgbase=linux-lts
 _srcname=linux-4.4
 pkgver=4.4.8
 pkgrel=1
@@ -12,7 +12,7 @@ source=(https://www.kernel.org/pub/linux/kernel/v4.x/${_srcname}.tar.{xz,sign}
         # the main kernel config files
         'config' 'config.x86_64'
         # standard config files for mkinitcpio ramdisk
-        "${pkgbase%-*}.preset"
+        "${pkgbase}.preset"
         change-default-console-loglevel.patch
         0001-sdhci-revert.patch
         add-support-for-surface-touchpad.patch)
@@ -26,7 +26,7 @@ sha256sums=('401d7c8fef594999a460d10c72c5a94e9c2e1022f16795ec51746b0d165418b2'
             '1f036f7464da54ae510630f0edb69faa115287f86d9f17641197ffda8cfd49e0'
             '1256b241cd477b265a3c2d64bdc19ffe3c9bbcee82ea3994c590c2c76e767d99'
             '5313df7cb5b4d005422bd4cd0dae956b2dadba8f3db904275aaf99ac53894375'
-            '3fc4f32d3daf3c727f48526529adb5f82034f300d4e77f0a95994fe3aa5f5bb5')
+            '906e2c054303d3a2ef53c9b38da43bf47af1c240513f9fb5674c8a9e46d4d90c')
 
 validpgpkeys=('ABAF11C65A2970B130ABE3C479BE3E4300411886' # Linus Torvalds <torvalds@linux-foundation.org>
               '647F28654894E3BD457199BE38DBBDC86092693E' # Greg Kroah-Hartman (Linux kernel stable release signing key) <greg@kroah.com>
