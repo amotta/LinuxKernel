@@ -16,7 +16,7 @@ source=(https://www.kernel.org/pub/linux/kernel/v4.x/${_srcname}.tar.{xz,sign}
         # the main kernel config files
         'config' 'config.x86_64'
         # standard config files for mkinitcpio ramdisk
-        "linux-lts.preset"
+        "$pkgbase.preset"
         change-default-console-loglevel.patch
         0001-sdhci-revert.patch
         add-support-for-surface-touchpad.patch)
@@ -104,7 +104,7 @@ _package() {
   depends=('coreutils' 'linux-firmware' 'kmod' 'mkinitcpio>=0.7')
   optdepends=('crda: to set the correct wireless channels of your country')
   backup=("etc/mkinitcpio.d/${pkgbase}.preset")
-  install=linux-lts.install
+  install="${pkgbase}.install"
 
   cd "${srcdir}/${_srcname}"
 
