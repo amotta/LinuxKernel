@@ -1,8 +1,8 @@
 # $Id: PKGBUILD 281881 2016-11-22 15:07:53Z andyrtr $
 # Maintainer: Andreas Radke <andyrtr@archlinux.org>
 
-#pkgbase=linux-lts
-pkgbase=linux-lts-amotta
+pkgbase=linux-lts
+#pkgbase=linux-lts-custom
 _srcname=linux-4.4
 pkgver=4.4.34
 pkgrel=1
@@ -18,8 +18,7 @@ source=(https://www.kernel.org/pub/linux/kernel/v4.x/${_srcname}.tar.{xz,sign}
         # standard config files for mkinitcpio ramdisk
         linux-lts.preset
         change-default-console-loglevel.patch
-        0001-sdhci-revert.patch
-        add-support-for-surface-touchpad.patch)
+        0001-sdhci-revert.patch)
 # https://www.kernel.org/pub/linux/kernel/v4.x/sha256sums.asc
 sha256sums=('401d7c8fef594999a460d10c72c5a94e9c2e1022f16795ec51746b0d165418b2'
             'SKIP'
@@ -29,9 +28,7 @@ sha256sums=('401d7c8fef594999a460d10c72c5a94e9c2e1022f16795ec51746b0d165418b2'
             '68c7296ff2f5f55d69e83aa4d20f925df740b1eb1e6bdb0f13e8a170360ed09f'
             '1f036f7464da54ae510630f0edb69faa115287f86d9f17641197ffda8cfd49e0'
             '1256b241cd477b265a3c2d64bdc19ffe3c9bbcee82ea3994c590c2c76e767d99'
-            '5313df7cb5b4d005422bd4cd0dae956b2dadba8f3db904275aaf99ac53894375'
-            'a9db54fd5032cdb5e57dd20fe6b1d30ee3f1d3fa8b8f939a6e8086a5159c0230')
-
+            '5313df7cb5b4d005422bd4cd0dae956b2dadba8f3db904275aaf99ac53894375')
 validpgpkeys=('ABAF11C65A2970B130ABE3C479BE3E4300411886' # Linus Torvalds <torvalds@linux-foundation.org>
               '647F28654894E3BD457199BE38DBBDC86092693E' # Greg Kroah-Hartman (Linux kernel stable release signing key) <greg@kroah.com>
              )
@@ -55,9 +52,6 @@ prepare() {
   # remove this when a Kconfig knob is made available by upstream
   # (relevant patch sent upstream: https://lkml.org/lkml/2011/7/26/227)
   patch -p1 -i "${srcdir}/change-default-console-loglevel.patch"
-
-  # add support for type cover 4
-  patch -p1 -i "${srcdir}/add-support-for-surface-touchpad.patch"
 
   if [ "${CARCH}" = "x86_64" ]; then
     cat "${srcdir}/config.x86_64" > ./.config
