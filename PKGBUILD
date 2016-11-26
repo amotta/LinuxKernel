@@ -1,10 +1,10 @@
-# $Id: PKGBUILD 279445 2016-10-29 18:21:59Z andyrtr $
+# $Id: PKGBUILD 281881 2016-11-22 15:07:53Z andyrtr $
 # Maintainer: Andreas Radke <andyrtr@archlinux.org>
-# Modified by: Alessandro Motta
 
+#pkgbase=linux-lts
 pkgbase=linux-lts-amotta
 _srcname=linux-4.4
-pkgver=4.4.28
+pkgver=4.4.34
 pkgrel=1
 arch=('i686' 'x86_64')
 url="http://www.kernel.org/"
@@ -16,15 +16,14 @@ source=(https://www.kernel.org/pub/linux/kernel/v4.x/${_srcname}.tar.{xz,sign}
         # the main kernel config files
         'config' 'config.x86_64'
         # standard config files for mkinitcpio ramdisk
-        "$pkgbase.preset"
+        linux-lts.preset
         change-default-console-loglevel.patch
         0001-sdhci-revert.patch
         add-support-for-surface-touchpad.patch)
-
 # https://www.kernel.org/pub/linux/kernel/v4.x/sha256sums.asc
 sha256sums=('401d7c8fef594999a460d10c72c5a94e9c2e1022f16795ec51746b0d165418b2'
             'SKIP'
-            '6687b8005ae47a63de9331f96d6351f7a2d6234093a26849600a70e18480aaaf'
+            'b1e77807267aa3ec81e46c15b1a4be0c7169b6c19eb52cd371c4f58dd2183a9d'
             'SKIP'
             'b11702727b1503e5a613946790978481d34d8ecc6870337fadd3ce1ef084a8e2'
             '68c7296ff2f5f55d69e83aa4d20f925df740b1eb1e6bdb0f13e8a170360ed09f'
@@ -46,7 +45,7 @@ prepare() {
 
   # add latest fixes from stable queue, if needed
   # http://git.kernel.org/?p=linux/kernel/git/stable/stable-queue.git
-  
+
   # revert http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=9faac7b95ea4f9e83b7a914084cc81ef1632fd91
   # fixes #47778 sdhci broken on some boards
   # https://bugzilla.kernel.org/show_bug.cgi?id=106541
@@ -104,7 +103,7 @@ _package() {
   depends=('coreutils' 'linux-firmware' 'kmod' 'mkinitcpio>=0.7')
   optdepends=('crda: to set the correct wireless channels of your country')
   backup=("etc/mkinitcpio.d/${pkgbase}.preset")
-  install="${pkgbase}.install"
+  install=linux-lts.install
 
   cd "${srcdir}/${_srcname}"
 
@@ -128,7 +127,7 @@ _package() {
     -i "${startdir}/${install}"
 
   # install mkinitcpio preset file for kernel
-  install -D -m644 "${srcdir}/${pkgbase}.preset" "${pkgdir}/etc/mkinitcpio.d/${pkgbase}.preset"
+  install -D -m644 "${srcdir}/linux-lts.preset" "${pkgdir}/etc/mkinitcpio.d/${pkgbase}.preset"
   sed \
     -e "1s|'linux.*'|'${pkgbase}'|" \
     -e "s|ALL_kver=.*|ALL_kver=\"/boot/vmlinuz-${pkgbase}\"|" \
